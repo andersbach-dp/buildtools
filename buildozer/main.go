@@ -61,6 +61,8 @@ var (
 
 	shortenLabelsFlag  = flag.Bool("shorten_labels", true, "convert added labels to short form, e.g. //foo:bar => :bar")
 	deleteWithComments = flag.Bool("delete_with_comments", true, "If a list attribute should be deleted even if there is a comment attached to it")
+
+	buildifierDisable = stringList("buildifier_disable", "configures the list of buildifier rewrites to disable")
 )
 
 func stringList(name, help string) func() []string {
@@ -103,6 +105,10 @@ func main() {
 
 	if !(*shortenLabelsFlag) {
 		build.DisableRewrites = []string{"label"}
+	}
+	rewrites := buildifierDisable()
+	if len(rewrites) > 0 {
+		build.DisableRewrites = append(build.DisableRewrites, rewrites...)
 	}
 	edit.ShortenLabelsFlag = *shortenLabelsFlag
 	edit.DeleteWithComments = *deleteWithComments
